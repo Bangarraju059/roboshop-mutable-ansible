@@ -1,0 +1,5 @@
+- name: Set up robshop
+  host: "{{HOSTS}}"
+  roles:
+    - "{{APP_COMPONENT_NAME}}"
+    -
