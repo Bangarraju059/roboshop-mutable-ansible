@@ -2,4 +2,3 @@
   host: "{{HOSTS}}"
   roles:
     - "{{APP_COMPONENT_NAME}}"
-    -
