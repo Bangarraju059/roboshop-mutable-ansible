@@ -28,3 +28,22 @@
     src: /tmp/catalogue-main/
     dest: /usr/roboshop/catalogue
     remote_src: yes
+    become_user: roboshop
+
+- name: Install nodejs dependencies
+  community.general.npm:
+    path: /home/roboshop/catalogue
+  become_user: roboshop
+
+- name: Copy catalogue SystemD file
+  ansible.builtin.template:
+    src: systemd.service
+    dest: /etc/systemd/system/catalogue.service
+
+- name: Restart catalogue
+  ansible.builtin.systed:
+    name: catalogue
+    state: restarted
+    enabled: yes
+    daemon-reload: yes
+
