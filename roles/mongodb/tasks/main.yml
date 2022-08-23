@@ -1,11 +1,11 @@
 - name: Copy MongoDB repo file
   ansible.builtin.copy:
-    src: mongodb.repo
-    dest: /etc/yum.repos.d/mongodb.repo
+    src: mysql.repo
+    dest: /etc/yum.repos.d/mysql.repo
 
-- name: Install MongoDB server
+- name: Install MySQL server
   ansible.builtin.yum:
-    name: mongodb-org
+    name: mysql
     state: installed
 
 - name: Update MongoDB Listen Address
