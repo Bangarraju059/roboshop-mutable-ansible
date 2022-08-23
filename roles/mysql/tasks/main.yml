@@ -5,7 +5,9 @@
 
 - name: Install MySQL server
   ansible.builtin.yum:
-    name: mysql-community-server
+    name:
+      - mysql-community-server
+      - MYSQL-python
     state: installed
 
 - name: Start MySQL service
@@ -13,6 +15,7 @@
     name: mysqld
     state: restarted
     enabled: yes
+
 - name: Load MySQL log file
   ansible.builtin.slurp:
     src: /var/log/mysqld.log
