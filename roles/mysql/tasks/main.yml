@@ -16,17 +16,24 @@
     state: restarted
     enabled: yes
 
-- name: Load MySQL log file
-  ansible.builtin.slurp:
-    src: /var/log/mysqld.log
-  register: mysql_log
 
-- name: Declare facts
-  ansible.builtin.set_fact:
-    DEFAULT_PASS: "{{mysql_log['content'] | b64decode | regex_findall('.*temporary password.*') | join(' ') | split(' ') | last}}"
 
-- name: Get MySQL version to check the DB connection
-  mysql_info:
-    login_user: root
-    login_password: "{{MYSQL_PASSWORD}}"
-    filter: version
+- name: Handle the error
+  block:
+    - name: Get MySQL version to check the DB connection
+      mysql_info:
+        login_user: root
+        login_password: "{{MYSQL_PASSWORD}}"
+        filter: version
+  rescue:
+    - name: Load MySQL log file
+      ansible.builtin.slurp:
+          src: /var/log/mysqld.log
+      register: mysql_log
+
+    - name: Declare facts
+      ansible.builtin.set_fact:
+        DEFAULT_PASS: "{{mysql_log['content'] | b64decode | regex_findall('.*temporary password.*') | join(' ') | split(' ') | last}}"
+
+    - name: Change MySQL
+      ansible.builtin.shell: echo "alter user 'root'@'localhost' identified with mysql_native_password by {{MYSQL_PASSWORD}}" | mysql --connect-expired-password -uroot -p{{DEFAULT_PASS}}
