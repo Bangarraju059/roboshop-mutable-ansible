@@ -13,3 +13,11 @@
     name: mysqld
     state: restarted
     enabled: yes
+- name: Load MySQL log file
+  ansible.builtin.slurp:
+    src: /var/log/mysqld.log
+  register: mysql_log
+
+- name: Print
+  debug:
+    msg: "{{mysql_log['content'] | b64decode}}"
