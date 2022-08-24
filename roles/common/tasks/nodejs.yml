@@ -6,44 +6,17 @@
     name: nodejs
     state: installed
 
-- name: Add Roboshop App user
-  ansible.builtin.user:
-    name: roboshop
-    comment: Roboshop Application user
-
-
-- name: Remove old App content
-  ansible.builtin.file:
-    path: /home/roboshop/{{COMPONENT}}
-    state: absent
-
-- name: Download {{COMPONENT}} content & extract it
-  ansible.builtin.unarchive:
-    src: "https://github.com/roboshop-devops-project/{{COMPONENT}}/archive/main.zip"
-    dest: /tmp
-    remote_src: yes
-
-- name: Copy {{COMPONENT}} content
-  ansible.builtin.copy:
-    src: /tmp/{{COMPONENT}}-main/
-    dest: /usr/roboshop/{{COMPONENT}}
-    remote_src: yes
-    become_user: roboshop
+- name: Include App pre setup
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-pre-setup
 
 - name: Install nodejs dependencies
   community.general.npm:
     path: /home/roboshop/{{COMPONENT}}
   become_user: roboshop
 
-- name: Copy User SystemD file
-  ansible.builtin.template:
-    src: systemd.service
-    dest: /etc/systemd/system/{{COMPONENT}}.service
-
-- name: Restart {{COMPONENT}}
-  ansible.builtin.systemd:
-    name: "{{COMPONENT}}"
-    state: restarted
-    enabled: yes
-    daemon-reload: yes
-
+- name: Include systemD
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: systemd
