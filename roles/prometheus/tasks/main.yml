@@ -1,0 +1,8 @@
+- name: Setup Server configuration
+  ansible.builtin.import_tasks: server.yml
+  when: PROMETHEUS_INSTALL_TYPE == "server"
+
+- name: Setup Client configuration
+  ansible.builtin.import_tasks: client.yml
+  when: PROMETHEUS_INSTALL_TYPE == "client"
+
